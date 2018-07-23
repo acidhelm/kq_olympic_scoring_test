@@ -173,8 +173,17 @@ def get_players(teams, tournament)
     players
 end
 
-# Calculates how many points each team has earned in the tournament.
+# Calculates how many points each team has earned in the tournament.  If the
+# tournament is not yet complete, the values are the mininum number of points
+# that the team can receive based on their current position in the bracket.
 def calculate_team_points(tournament_info)
+    # If the tournament is complete, we can calculate points based on the
+    # teams' `final_rank`s.
+    if tournament_info.tournament.state == "complete"
+        calculate_team_points_by_final_rank(tournament_info)
+        return
+    end
+
     # For each team, look at the matches that it is in, look at the point
     # values of those matches, and take the maximum point value.  That's the
     # number of points that the team has earned so far in the bracket.
@@ -193,26 +202,43 @@ def calculate_team_points(tournament_info)
         puts "The highest point values of those matches is #{points_earned}" \
                "#{" + #{base_point_value} base" if base_point_value > 0}"
 
-        # Many matches have the same point value, but we care about the match
-        # with the largest play_order.  That's the match that occured last, so
-        # it's the farthest that the team advanced in the bracket.
-        latest_match =
-            matches_with_team.values.select { |match| match.points == points_earned }.
-            max_by { |match| match.play_order }
+        team.points = points_earned + base_point_value
+    end
+end
 
-        puts "The latest match with that score has play order #{latest_match.play_order}"
+# Calculates how many points each team earned in the tournament.
+def calculate_team_points_by_final_rank(tournament_info)
+    base_point_value = tournament_info.tournament.base_point_value
+
+    # Calculate how many points to award to each rank.  When multiple teams
+    # have the same rank (e.g., two teams tie for 5th place), those positions
+    # get the average of the points available to those positions.  For example,
+    # in a 6-team tournament, the teams in 1st through 4th get 6 through 3
+    # points respectively.  The two teams in 5th get 1.5, the average of 2 and 1.
+    final_rank_points =
+        tournament_info.teams.values.sort { |a, b| a.final_rank <=> b.final_rank }.
+        each_with_index.each_with_object({}) do |(team, idx), rank_points|
+            rank_points[team.final_rank] ||= []
+            rank_points[team.final_rank] << tournament_info.teams.size.to_f - idx
+        end
+
+    # For debugging: Print the points to be awarded to each rank.  We can
+    # check the output to ensure that ranks where teams are tied are correctly
+    # assigned multiple point values.
+    final_rank_points.keys.sort.each do |rank|
+        puts "Points for rank #{rank} = #{final_rank_points[rank].join ','}"
+    end
+
+    tournament_info.teams.values.each do |team|
+        points_earned = final_rank_points[team.final_rank].sum /
+                          final_rank_points[team.final_rank].size
+
+        puts "#{team.name} finished in position #{team.final_rank} and gets" \
+               " #{points_earned} points" \
+               "#{ " + #{base_point_value} base" if base_point_value > 0}"
 
         team.points = points_earned + base_point_value
 
-        # If the bracket is complete, and this is the last bracket of the
-        # tournament, give this team one more point if they reached the last
-        # match and won it.
-        if latest_match.play_order == tournament_info.matches.size &&
-           team_id == latest_match.winner_id &&
-           tournament_info.tournament.final_bracket
-            puts "This team gets 1 extra point for winning the tournament"
-            team.points += 1
-        end
     end
 end
 
