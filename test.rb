@@ -274,8 +274,8 @@ def calculate_scene_points(tournament_info)
         if scores.length > tournament_info.tournament.max_players_to_count
             dropped = scores.slice!(tournament_info.tournament.max_players_to_count..-1)
 
-            puts "Dropping the #{dropped.size} lowest-scoring players from #{scene}," \
-                   " scores: #{dropped.join(', ')}"
+            puts "Dropping the #{dropped.size} lowest scores from #{scene}:" \
+                   " #{dropped.join(', ')}"
         end
 
         # Add up the scores for each scene.
