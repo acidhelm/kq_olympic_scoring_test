@@ -104,10 +104,10 @@ def get_teams(tournament)
     teams
 end
 
-# Returns a hash where each key is a match ID, and the corresponding value is
-# an `OpenStruct` that contains that match's info.
+# Returns an array of `OpenStruct`s that contain info about the matches in
+# the tournament.
 def get_matches(tournament)
-    matches = {}
+    matches = []
     base_point_value = tournament.base_point_value
 
     # Check that `match_values` in the config file is the right size.
@@ -135,11 +135,11 @@ def get_matches(tournament)
                " and is worth #{points} points" \
                "#{" + #{base_point_value} base" if base_point_value > 0}"
 
-        matches[s.id] = OpenStruct.new(state: s.state, play_order: s.suggested_play_order,
-                                       attachment_count: s.attachment_count,
-                                       team1: s.player1_id, team2: s.player2_id,
-                                       winner_id: s.winner_id, loser_id: s.loser_id,
-                                       points: points)
+        matches << OpenStruct.new(state: s.state, play_order: s.suggested_play_order,
+                                  attachment_count: s.attachment_count,
+                                  team1: s.player1_id, team2: s.player2_id,
+                                  winner_id: s.winner_id, loser_id: s.loser_id,
+                                  points: points)
     end
 
     matches
@@ -190,13 +190,13 @@ def calculate_team_points(tournament_info)
     base_point_value = tournament_info.tournament.base_point_value
 
     tournament_info.teams.each do |team_id, team|
-        matches_with_team = tournament_info.matches.select do |_, match|
+        matches_with_team = tournament_info.matches.select do |match|
             team_id == match.team1 || team_id == match.team2
         end
 
         puts "Team #{team.name} was in #{matches_with_team.size} matches"
 
-        _, highest_value_match = matches_with_team.max_by { |_, match| match.points }
+        highest_value_match = matches_with_team.max_by { |match| match.points }
         points_earned = highest_value_match.points
 
         puts "The highest point values of those matches is #{points_earned}" \
