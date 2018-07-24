@@ -242,7 +242,18 @@ end
 
 # Calculates how many points each player has earned in the tournament.
 def calculate_player_points(tournament_info)
-    tournament_info.teams.each do |team_id, team|
+    # Sort the teams by points in descending order.  This way, the output will
+    # follow the teams' finishing order, which will be easier to read.
+    sorted_teams = tournament_info.teams.each_with_object([]) do |(team_id, team), obj|
+                       obj << OpenStruct.new(team_id: team_id, team: team)
+                   end.sort do |a, b|
+                       b.team.points <=> a.team.points
+                   end
+
+    sorted_teams.each do |st|
+        team_id = st.team_id
+        team = st.team
+
         tournament_info.players[team_id].each do |player|
             puts "Awarding #{team.points} points to #{player.name}" \
                    " (#{player.scene}, #{team.name})"
