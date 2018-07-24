@@ -117,7 +117,12 @@ def get_matches(tournament)
     # bracket is complete and it is double-elimination, then the array size may
     # be one larger than the number of matches, to account for a grand final
     # that was only one match long.
-    num_matches = tournament.matches.size
+    #
+    # If this is a two-stage tournament, the matches in the first stage have
+    # `suggested_play_order` set to nil, so don't consider those matches.
+    elim_stage_matches =
+        tournament.matches.select { |m| m[:match][:suggested_play_order] }
+    num_matches = elim_stage_matches.length
     array_size = tournament.config[:match_values].size
 
     if num_matches != array_size
@@ -129,7 +134,7 @@ def get_matches(tournament)
         end
     end
 
-    tournament.matches.each do |match|
+    elim_stage_matches.each do |match|
         s = OpenStruct.new(match[:match])
         points = tournament.config[:match_values][s.suggested_play_order - 1]
 
