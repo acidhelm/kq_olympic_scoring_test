@@ -206,26 +206,28 @@ end
 
 # Calculates how many points each team earned in the tournament.
 def calculate_team_points_by_final_rank(tournament_info)
-    base_point_value = tournament_info.tournament.base_point_value
-
     # Calculate how many points to award to each rank.  When multiple teams
     # have the same rank (e.g., two teams tie for 5th place), those positions
     # get the average of the points available to those positions.  For example,
     # in a 6-team tournament, the teams in 1st through 4th get 6 through 3
     # points respectively.  The two teams in 5th get 1.5, the average of 2 and 1.
+    num_teams = tournament_info.teams.size.to_f
+
     final_rank_points =
         tournament_info.teams.values.sort_by(&:final_rank).
         each_with_index.each_with_object({}) do |(team, idx), rank_points|
             rank_points[team.final_rank] ||= []
-            rank_points[team.final_rank] << tournament_info.teams.size.to_f - idx
+            rank_points[team.final_rank] << num_teams - idx
         end
 
     # For debugging: Print the points to be awarded to each rank.  We can
     # check the output to ensure that ranks where teams are tied are correctly
     # assigned multiple point values.
-    final_rank_points.keys.sort.each do |rank|
-        puts "Points for rank #{rank} = #{final_rank_points[rank].join ','}"
+    final_rank_points.sort.each do |rank, points|
+        puts "Points for rank #{rank} = #{points.join(', ')}"
     end
+
+    base_point_value = tournament_info.tournament.base_point_value
 
     tournament_info.teams.values.sort_by(&:final_rank).each do |team|
         points_earned = final_rank_points[team.final_rank].sum /
@@ -233,7 +235,7 @@ def calculate_team_points_by_final_rank(tournament_info)
 
         puts "#{team.name} finished in position #{team.final_rank} and gets" \
                " #{points_earned} points" \
-               "#{ " + #{base_point_value} base" if base_point_value > 0}"
+               "#{" + #{base_point_value} base" if base_point_value > 0}"
 
         team.points = points_earned + base_point_value
 
@@ -244,16 +246,9 @@ end
 def calculate_player_points(tournament_info)
     # Sort the teams by points in descending order.  This way, the output will
     # follow the teams' finishing order, which will be easier to read.
-    sorted_teams = tournament_info.teams.each_with_object([]) do |(team_id, team), obj|
-                       obj << OpenStruct.new(team_id: team_id, team: team)
-                   end.sort do |a, b|
-                       b.team.points <=> a.team.points
-                   end
-
-    sorted_teams.each do |st|
-        team_id = st.team_id
-        team = st.team
-
+    tournament_info.teams.sort do |a, b|
+        b[1].points <=> a[1].points
+    end.each do |team_id, team|
         tournament_info.players[team_id].each do |player|
             puts "Awarding #{team.points} points to #{player.name}" \
                    " (#{player.scene}, #{team.name})"
