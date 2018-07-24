@@ -257,7 +257,7 @@ def calculate_player_points(tournament_info)
         tournament_info.players[team_id].each do |player|
             puts "Awarding #{team.points} points to #{player.name}" \
                    " (#{player.scene}, #{team.name})"
-            player.points += team.points
+            player.points = team.points
         end
     end
 end
