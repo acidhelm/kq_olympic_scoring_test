@@ -263,8 +263,9 @@ def calculate_player_points(tournament_info)
 end
 
 # Calculates how many points each scene has earned in the tournament.
-# Returns a hash whose keys are scene names, and whose values are the points
-# that the scene has earned.
+# Returns an array of `OpenStruct`s whose members are the scene name, the
+# points that the scene earned, and the number of players whose scores were
+# counted in the point total.
 def calculate_scene_points(tournament_info)
     # Collect the scores of all players from the same scene.
     scene_scores = tournament_info.players.values.each_with_object({}) do |players, scores|
@@ -274,7 +275,7 @@ def calculate_scene_points(tournament_info)
         end
     end
 
-    scene_scores.each_with_object({}) do |(scene, scores), results|
+    scene_scores.map do |scene, scores|
         # If a scene has more players than the max number of players whose scores
         # can be counted, drop the extra players' scores.
         # Sort the scores for each scene in descending order, so we only keep the
@@ -289,7 +290,7 @@ def calculate_scene_points(tournament_info)
         end
 
         # Add up the scores for each scene.
-        results[scene] = scores.sum
+        OpenStruct.new(scene: scene, points: scores.sum, num_players: scores.length)
     end
 end
 
@@ -303,13 +304,11 @@ def calculate_points(tournament_info)
 end
 
 def main
-    output = calculate_points(read_tournament).map do |scene, points|
-        OpenStruct.new(scene: scene, points: points)
-    end.sort do |a, b|
+    output = calculate_points(read_tournament).sort do |a, b|
         # Sort by points descending, then scene name ascending.
         a.points != b.points ? b.points <=> a.points : a.scene <=> b.scene
     end.map do |result|
-        "#{result.scene} earned #{result.points} points"
+        "#{result.scene} earned #{result.points} points from #{result.num_players} players"
     end
 
     puts output
