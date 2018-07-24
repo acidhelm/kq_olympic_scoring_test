@@ -72,7 +72,7 @@ def get_tournament
     # Default to HTTPS.
     uri.scheme = "https" if uri.scheme.nil?
 
-    puts "Reading config file from #{uri}"
+    puts "Reading the config file from #{uri}"
 
     tournament.config = send_get_request(uri.to_s, "#{SLUG}_config_file.json")
 
@@ -95,11 +95,13 @@ def get_teams(tournament)
 
     tournament.participants.each do |team|
         s = OpenStruct.new(team[:participant])
-        puts "Team \"#{s.name}\" has ID #{s.id}"
 
         teams[s.id] = OpenStruct.new(name: s.name, final_rank: s.final_rank,
                                      points: 0.0)
     end
+
+    puts "These teams are in the tournament: " +
+           teams.values.sort_by { |t| t.name }.map { |t| %("#{t.name}") }.join(", ")
 
     teams
 end
@@ -131,10 +133,6 @@ def get_matches(tournament)
         s = OpenStruct.new(match[:match])
         points = tournament.config[:match_values][s.suggested_play_order - 1]
 
-        puts "Match with play order #{s.suggested_play_order} has ID #{s.id}" \
-               " and is worth #{points} points" \
-               "#{" + #{base_point_value} base" if base_point_value > 0}"
-
         matches << OpenStruct.new(state: s.state, play_order: s.suggested_play_order,
                                   attachment_count: s.attachment_count,
                                   team1: s.player1_id, team2: s.player2_id,
@@ -142,7 +140,7 @@ def get_matches(tournament)
                                   points: points)
     end
 
-    matches
+    matches.sort_by! { |m| m.suggested_play_order }
 end
 
 # Returns a hash where each key is a team ID, and the corresponding value is an
@@ -158,7 +156,7 @@ def get_players(teams, tournament)
         team[:players].each do |player|
             s = OpenStruct.new(player)
             players[team_id] << OpenStruct.new(name: s.name, scene: s.scene, points: 0.0)
-            puts "Player #{s.name} from scene #{s.scene} is on team #{team[:name]}"
+            puts %(Player "#{s.name}" from "#{s.scene}" is on "#{team[:name]}")
         end
     end
 
@@ -229,7 +227,7 @@ def calculate_team_points_by_final_rank(tournament_info)
         puts "Points for rank #{rank} = #{final_rank_points[rank].join ','}"
     end
 
-    tournament_info.teams.values.each do |team|
+    tournament_info.teams.values.sort_by { |team| team.final_rank }.each do |team|
         points_earned = final_rank_points[team.final_rank].sum /
                           final_rank_points[team.final_rank].size
 
@@ -246,7 +244,8 @@ end
 def calculate_player_points(tournament_info)
     tournament_info.teams.each do |team_id, team|
         tournament_info.players[team_id].each do |player|
-            puts "Awarding #{team.points} points to player #{player.name} on team #{team.name}"
+            puts "Awarding #{team.points} points to #{player.name}" \
+                   " (#{player.scene}, #{team.name})"
             player.points += team.points
         end
     end
