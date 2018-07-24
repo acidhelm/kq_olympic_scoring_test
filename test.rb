@@ -101,7 +101,7 @@ def get_teams(tournament)
     end
 
     puts "These teams are in the tournament: " +
-           teams.values.sort_by { |t| t.name }.map { |t| %("#{t.name}") }.join(", ")
+           teams.values.sort_by(&:name).map { |t| %("#{t.name}") }.join(", ")
 
     teams
 end
@@ -140,7 +140,7 @@ def get_matches(tournament)
                                   points: points)
     end
 
-    matches.sort_by! { |m| m.suggested_play_order }
+    matches.sort_by!(&:suggested_play_order)
 end
 
 # Returns a hash where each key is a team ID, and the corresponding value is an
@@ -194,7 +194,7 @@ def calculate_team_points(tournament_info)
 
         puts "Team #{team.name} was in #{matches_with_team.size} matches"
 
-        highest_value_match = matches_with_team.max_by { |match| match.points }
+        highest_value_match = matches_with_team.max_by(&:points)
         points_earned = highest_value_match.points
 
         puts "The highest point values of those matches is #{points_earned}" \
@@ -214,7 +214,7 @@ def calculate_team_points_by_final_rank(tournament_info)
     # in a 6-team tournament, the teams in 1st through 4th get 6 through 3
     # points respectively.  The two teams in 5th get 1.5, the average of 2 and 1.
     final_rank_points =
-        tournament_info.teams.values.sort_by { |t| t.final_rank }.
+        tournament_info.teams.values.sort_by(&:final_rank).
         each_with_index.each_with_object({}) do |(team, idx), rank_points|
             rank_points[team.final_rank] ||= []
             rank_points[team.final_rank] << tournament_info.teams.size.to_f - idx
@@ -227,7 +227,7 @@ def calculate_team_points_by_final_rank(tournament_info)
         puts "Points for rank #{rank} = #{final_rank_points[rank].join ','}"
     end
 
-    tournament_info.teams.values.sort_by { |team| team.final_rank }.each do |team|
+    tournament_info.teams.values.sort_by(&:final_rank).each do |team|
         points_earned = final_rank_points[team.final_rank].sum /
                           final_rank_points[team.final_rank].size
 
