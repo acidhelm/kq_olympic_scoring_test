@@ -28,7 +28,7 @@ def send_get_request(url, cache_file, params = {})
     end
 end
 
-# Reads all the info about the tournament, and returns an `OpenStruct` that
+# Reads all the info about the tournament, and returns a struct that
 # contains the state of the tournament.
 def read_tournament
     tournament = get_tournament
@@ -41,7 +41,8 @@ def read_tournament
 end
 
 # Reads the tournament, team, and match info for the tournament.  Returns all
-# that info in a hash.
+# that info in a hash that is built from the JSON that Challonge returns.
+# See https://api.challonge.com/v1/documents/tournaments/show
 def get_tournament
     url = "https://api.challonge.com/v1/tournaments/#{SLUG}.json"
     params = { include_matches: 1, include_participants: 1 }
@@ -88,8 +89,8 @@ def get_tournament
 end
 
 # Returns a hash where each key is a team ID, and the corresponding value is
-# an `OpenStruct` that contains that team's info.  The `final_rank` field is
-# non-nil only if the bracket has been finalized.
+# a struct that contains that team's info.  The `final_rank` field is non-nil
+# only if the bracket has been finalized.
 def get_teams(tournament)
     teams = {}
 
@@ -106,17 +107,16 @@ def get_teams(tournament)
     teams
 end
 
-# Returns an array of `OpenStruct`s that contain info about the matches in
-# the tournament.
+# Returns an array of structs that contain info about the matches in the tournament.
 def get_matches(tournament)
     matches = []
     base_point_value = tournament.base_point_value
 
     # Check that `match_values` in the config file is the right size.
     # The size must normally equal the number of matches.  However, if the
-    # bracket is complete and it is double-elimination, then the array size may
-    # be one larger than the number of matches, to account for a grand final
-    # that was only one match long.
+    # bracket is complete and it is double-elimination, then the array size is
+    # allowed to be one more than the number of matches, to account for a grand
+    # final that was only one match long.
     #
     # If this is a two-stage tournament, the matches in the first stage have
     # `suggested_play_order` set to nil, so don't consider those matches.
@@ -149,7 +149,7 @@ def get_matches(tournament)
 end
 
 # Returns a hash where each key is a team ID, and the corresponding value is an
-# array of `OpenStruct`s that contains info about the players on that team.
+# array of structs that contain info about the players on that team.
 def get_players(teams, tournament)
     players = {}
 
@@ -202,7 +202,7 @@ def calculate_team_points(tournament_info)
         highest_value_match = matches_with_team.max_by(&:points)
         points_earned = highest_value_match.points
 
-        puts "The highest point values of those matches is #{points_earned}" \
+        puts "The largest point value of those matches is #{points_earned}" \
                "#{" + #{base_point_value} base" if base_point_value > 0}"
 
         team.points = points_earned + base_point_value
@@ -212,9 +212,9 @@ end
 # Calculates how many points each team earned in the tournament.
 def calculate_team_points_by_final_rank(tournament_info)
     # Calculate how many points to award to each rank.  When multiple teams
-    # have the same rank (e.g., two teams tie for 5th place), those positions
-    # get the average of the points available to those positions.  For example,
-    # in a 6-team tournament, the teams in 1st through 4th get 6 through 3
+    # have the same rank (e.g., two teams tie for 5th place), those teams
+    # get the average of the points available to those ranks.  For example,
+    # in a 6-team tournament, the teams in 1st through 4th place get 6 through 3
     # points respectively.  The two teams in 5th get 1.5, the average of 2 and 1.
     num_teams = tournament_info.teams.size.to_f
 
@@ -243,7 +243,6 @@ def calculate_team_points_by_final_rank(tournament_info)
                "#{" + #{base_point_value} base" if base_point_value > 0}"
 
         team.points = points_earned + base_point_value
-
     end
 end
 
@@ -263,9 +262,9 @@ def calculate_player_points(tournament_info)
 end
 
 # Calculates how many points each scene has earned in the tournament.
-# Returns an array of `OpenStruct`s whose members are the scene name, the
-# points that the scene earned, and the number of players whose scores were
-# counted in the point total.
+# Returns an array of structs whose members are the scene name, the points that
+# the scene earned, and the number of players whose scores were counted in
+# the point total.
 def calculate_scene_points(tournament_info)
     # Collect the scores of all players from the same scene.
     scene_scores = tournament_info.players.values.each_with_object({}) do |players, scores|
