@@ -159,8 +159,10 @@ def get_players(teams, tournament)
         team[:players].each do |player|
             s = OpenStruct.new(player)
             players[team_id] << OpenStruct.new(name: s.name, scene: s.scene, points: 0.0)
-            puts %(Player "#{s.name}" from "#{s.scene}" is on "#{team[:name]}")
         end
+
+        puts "#{team[:name]} has: " +
+             players[team_id].map { |p| "#{p.name} (#{p.scene})" }.join(", ")
     end
 
     # Bail out if any team doesn't have exactly 5 players.
