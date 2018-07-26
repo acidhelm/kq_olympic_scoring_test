@@ -253,9 +253,11 @@ def calculate_player_points(tournament_info)
     tournament_info.teams.sort do |a, b|
         b[1].points <=> a[1].points
     end.each do |team_id, team|
+        puts "Awarding #{team.points} points to #{team.name}: " +
+             tournament_info.players[team_id].map { |p| "#{p.name} (#{p.scene})" }.
+             join(", ")
+
         tournament_info.players[team_id].each do |player|
-            puts "Awarding #{team.points} points to #{player.name}" \
-                   " (#{player.scene}, #{team.name})"
             player.points = team.points
         end
     end
