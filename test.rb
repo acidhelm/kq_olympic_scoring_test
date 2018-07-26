@@ -109,9 +109,6 @@ end
 
 # Returns an array of structs that contain info about the matches in the tournament.
 def get_matches(tournament)
-    matches = []
-    base_point_value = tournament.base_point_value
-
     # Check that `match_values` in the config file is the right size.
     # The size must normally equal the number of matches.  However, if the
     # bracket is complete and it is double-elimination, then the array size is
@@ -120,6 +117,7 @@ def get_matches(tournament)
     #
     # If this is a two-stage tournament, the matches in the first stage have
     # `suggested_play_order` set to nil, so don't consider those matches.
+    matches = []
     elim_stage_matches =
         tournament.matches.select { |m| m[:match][:suggested_play_order] }
     num_matches = elim_stage_matches.length
