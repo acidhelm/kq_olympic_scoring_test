@@ -120,7 +120,7 @@ def get_matches(tournament)
     matches = []
     elim_stage_matches =
         tournament.matches.select { |m| m[:match][:suggested_play_order] }
-    num_matches = elim_stage_matches.length
+    num_matches = elim_stage_matches.size
     array_size = tournament.config[:match_values].size
 
     if num_matches != array_size
@@ -283,7 +283,7 @@ def calculate_scene_points(tournament_info)
         # highest-scoring players.
         scores.sort! { |a, b| b <=> a }
 
-        if scores.length > tournament_info.tournament.max_players_to_count
+        if scores.size > tournament_info.tournament.max_players_to_count
             dropped = scores.slice!(tournament_info.tournament.max_players_to_count..-1)
 
             puts "Dropping the #{dropped.size} lowest scores from #{scene}:" \
@@ -291,7 +291,7 @@ def calculate_scene_points(tournament_info)
         end
 
         # Add up the scores for each scene.
-        OpenStruct.new(scene: scene, points: scores.sum, num_players: scores.length)
+        OpenStruct.new(scene: scene, points: scores.sum, num_players: scores.size)
     end
 end
 
