@@ -102,7 +102,7 @@ def get_teams(tournament)
     end
 
     puts "These teams are in the tournament: " +
-           teams.values.sort_by(&:name).map { |t| %("#{t.name}") }.join(", ")
+           teams.each_value.sort_by(&:name).map { |t| %("#{t.name}") }.join(", ")
 
     teams
 end
@@ -169,7 +169,7 @@ def get_players(teams, tournament)
     invalid_teams = players.select { |_, team| team.size != 5 }
 
     if invalid_teams.any?
-        team_names = invalid_teams.keys.map { |id| teams[id].name }.join(", ")
+        team_names = invalid_teams.each_key.map { |id| teams[id].name }.join(", ")
         raise "These teams don't have 5 players: #{team_names}"
     end
 
@@ -219,7 +219,7 @@ def calculate_team_points_by_final_rank(tournament_info)
     num_teams = tournament_info.teams.size.to_f
 
     final_rank_points =
-        tournament_info.teams.values.sort_by(&:final_rank).
+        tournament_info.teams.each_value.sort_by(&:final_rank).
         each_with_index.each_with_object({}) do |(team, idx), rank_points|
             rank_points[team.final_rank] ||= []
             rank_points[team.final_rank] << num_teams - idx
@@ -234,7 +234,7 @@ def calculate_team_points_by_final_rank(tournament_info)
 
     base_point_value = tournament_info.tournament.base_point_value
 
-    tournament_info.teams.values.sort_by(&:final_rank).each do |team|
+    tournament_info.teams.each_value.sort_by(&:final_rank).each do |team|
         points_earned = final_rank_points[team.final_rank].sum /
                           final_rank_points[team.final_rank].size
 
@@ -269,7 +269,7 @@ end
 # the point total.
 def calculate_scene_points(tournament_info)
     # Collect the scores of all players from the same scene.
-    scene_scores = tournament_info.players.values.each_with_object({}) do |players, scores|
+    scene_scores = tournament_info.players.each_value.each_with_object({}) do |players, scores|
         players.each do |player|
             scores[player.scene] ||= []
             scores[player.scene] << player.points
