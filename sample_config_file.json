@@ -1,0 +1,108 @@
+{
+    "base_point_value": 0,
+    "final_bracket": true,
+    "max_players_to_count": 3,
+    "match_values": [ 1, 1, 1, 2, 2, 3, 3 ],
+    "teams": [
+        {
+            "name": "Burt's Bees (SEA/PDX)",
+            "players": [
+                {
+                    "name": "SF 6",
+                    "scene": "San Francisco"
+                },
+                {
+                    "name": "Seattle 1",
+                    "scene": "Seattle"
+                },
+                {
+                    "name": "Portland 1",
+                    "scene": "Portland"
+                },
+                {
+                    "name": "New York 3",
+                    "scene": "New York"
+                },
+                {
+                    "name": "Kansas City 2",
+                    "scene": "Kansas City"
+                }
+            ]
+        },
+        {
+            "name": "Bee Bear Bonanza (SF)",
+            "players": [
+                {
+                    "name": "SF 1",
+                    "scene": "San Francisco"
+                },
+                {
+                    "name": "SF 2",
+                    "scene": "San Francisco"
+                },
+                {
+                    "name": "SF 3",
+                    "scene": "San Francisco"
+                },
+                {
+                    "name": "SF 4",
+                    "scene": "San Francisco"
+                },
+                {
+                    "name": "SF 5",
+                    "scene": "San Francisco"
+                }
+            ]
+        },
+        {
+            "name": "Midwest Madness (CHI/MPLS/KC)",
+            "players": [
+                {
+                    "name": "Chicago 1",
+                    "scene": "Chicago"
+                },
+                {
+                    "name": "Chicago 2",
+                    "scene": "Chicago"
+                },
+                {
+                    "name": "Minneapolis 1",
+                    "scene": "Minneapolis"
+                },
+                {
+                    "name": "Minneapolis 2",
+                    "scene": "Minneapolis"
+                },
+                {
+                    "name": "Kansas City 1",
+                    "scene": "Kansas City"
+                }
+            ]
+        },
+        {
+            "name": "Snail Trails (NY/CLT)",
+            "players": [
+                {
+                    "name": "New York 1",
+                    "scene": "New York"
+                },
+                {
+                    "name": "New York 2",
+                    "scene": "New York"
+                },
+                {
+                    "name": "Charlotte 1",
+                    "scene": "Charlotte"
+                },
+                {
+                    "name": "Charlotte 2",
+                    "scene": "Charlotte"
+                },
+                {
+                    "name": "Charlotte 3",
+                    "scene": "Charlotte"
+                }
+            ]
+        }
+    ]
+}
