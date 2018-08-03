@@ -117,6 +117,9 @@ def get_matches(tournament)
     #
     # If this is a two-stage tournament, the matches in the first stage have
     # `suggested_play_order` set to nil, so don't consider those matches.
+    # If there is a match for 3rd place, its `suggested_play_order` is nil.
+    # We also ignore that match, and instead, assign points to the 3rd-place
+    # and 4th-place teams after the tournament has finished.
     matches = []
     elim_stage_matches =
         tournament.matches.select { |m| m[:match][:suggested_play_order] }
@@ -153,7 +156,18 @@ def get_players(teams, tournament)
 
     # Parse the team list and create structs for each player on the teams.
     tournament.config[:teams].each do |team|
-        team_id, _ = teams.find { |_, t| t.name == team[:name] }
+        # Look up the team in the `teams` hash.  This is how we associate a
+        # team in the config file with its ID on Challonge.
+        team_id, _ = teams.find { |_, t| t.name.casecmp?(team[:name]) }
+
+        # If the `find` call failed, then there is a team in the team list that
+        # isn't in the bracket.  We allow this so that multiple brackets can
+        # use the same master team list during a tournament.
+        if team_id.nil?
+            puts "Skipping a team that isn't in the bracket: #{team[:name]}"
+            next
+        end
+
         players[team_id] = []
 
         team[:players].each do |player|
@@ -161,7 +175,7 @@ def get_players(teams, tournament)
             players[team_id] << OpenStruct.new(name: s.name, scene: s.scene, points: 0.0)
         end
 
-        puts "#{team[:name]} has: " +
+        puts "#{team[:name]} (ID #{team_id}) has: " +
              players[team_id].map { |p| "#{p.name} (#{p.scene})" }.join(", ")
     end
 
