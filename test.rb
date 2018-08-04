@@ -3,6 +3,11 @@
 require "dotenv/load"
 require "rest-client"
 require "json"
+require_relative "tournament"
+require_relative "scene"
+require_relative "bracket"
+require_relative "team"
+require_relative "player"
 
 USE_CACHE = true
 UPDATE_CACHE = true
