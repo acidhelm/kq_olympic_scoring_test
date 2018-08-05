@@ -7,6 +7,7 @@ require_relative "tournament"
 require_relative "scene"
 require_relative "bracket"
 require_relative "team"
+require_relative "match"
 require_relative "player"
 
 USE_CACHE = true
@@ -335,5 +336,6 @@ def main
 end
 
 if __FILE__ == $0
-    main
+    # main
+    Tournament.new.load(SLUG)
 end
