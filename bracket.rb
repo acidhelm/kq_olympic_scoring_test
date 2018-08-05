@@ -54,12 +54,7 @@ class Bracket
             raise "The config file is missing \"#{key}\"" unless config.key?(key)
         end
 
-        @config = OpenStruct.new
-        @config.base_point_value = config[:base_point_value]
-        @config.final_bracket = config[:final_bracket]
-        @config.max_players_to_count = config[:max_players_to_count]
-        @config.match_values = config[:match_values]
-        @config.teams = config[:teams]
+        @config = Config.new(config)
     end
 
     def read_teams

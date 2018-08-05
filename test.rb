@@ -9,6 +9,7 @@ require_relative "bracket"
 require_relative "team"
 require_relative "match"
 require_relative "player"
+require_relative "config"
 
 USE_CACHE = true
 UPDATE_CACHE = true

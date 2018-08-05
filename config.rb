@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+class Config
+    attr_reader :base_point_value, :final_bracket, :max_players_to_count,
+                :match_values, :teams
+
+    def initialize(config_obj)
+        @base_point_value = config_obj[:base_point_value]
+        @final_bracket = config_obj[:final_bracket]
+        @max_players_to_count = config_obj[:max_players_to_count]
+        @match_values = config_obj[:match_values]
+        @teams = config_obj[:teams]
+    end
+end
