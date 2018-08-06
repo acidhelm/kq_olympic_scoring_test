@@ -64,36 +64,6 @@ class Bracket
         end
     end
 
-    # Calculates how many points each scene has earned in the tournament.
-    # Returns an array of Scene objects.
-    def calculate_scene_points
-        # Collect the scores of all players from the same scene.
-        scene_scores = @players.each_value.each_with_object({}) do |players, scores|
-            players.each do |player|
-                scores[player.scene] ||= []
-                scores[player.scene] << player.points
-            end
-        end
-
-        scene_scores.map do |scene, scores|
-            # If a scene has more players than the max number of players whose
-            # scores can be counted, drop the extra players' scores.
-            # Sort the scores for each scene in descending order, so we only
-            # keep the highest-scoring players.
-            scores.sort!.reverse!
-
-            if scores.size > @config.max_players_to_count
-                dropped = scores.slice!(@config.max_players_to_count..-1)
-
-                puts "Dropping the #{dropped.size} lowest scores from #{scene}:" \
-                       " #{dropped.join(', ')}"
-            end
-
-            # Add up the scores for each scene.
-            Scene.new(scene, scores)
-        end
-    end
-
     protected
 
     def read_config

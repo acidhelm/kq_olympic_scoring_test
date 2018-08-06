@@ -10,6 +10,10 @@ class Player
         @points = 0.0
     end
 
+    def hash
+        to_s.hash
+    end
+
     def to_s
         "#{@name} (#{@scene})"
     end

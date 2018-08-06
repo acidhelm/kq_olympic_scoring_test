@@ -337,8 +337,9 @@ def main
 end
 
 if __FILE__ == $0
-    # main
     tournament = Tournament.new
     tournament.load(SLUG)
     tournament.calculate_points
+
+    puts tournament.scene_scores.sort
 end
