@@ -50,6 +50,21 @@ class Bracket
         end
     end
 
+    # Calculates how many points each player has earned in the tournament.
+    def calculate_player_points
+        # Sort the teams by points in descending order.  This way, the output will
+        # follow the teams' finishing order, which will be easier to read.
+        @teams.sort_by(&:points).reverse_each do |team|
+            puts "Awarding #{team.points} points to #{team.name}: " +
+                 @players[team.id].map(&:to_s).join(", ")
+
+            @players[team.id].each do |player|
+                player.points = team.points
+            end
+        end
+    end
+
+
     protected
 
     def read_config

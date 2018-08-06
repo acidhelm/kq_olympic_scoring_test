@@ -33,7 +33,7 @@ class Tournament
     def calculate_points
         @brackets.each do |bracket|
             bracket.calculate_team_points
-            # bracket.calculate_player_points
+            bracket.calculate_player_points
             # bracket.calculate_scene_points
         end
     end

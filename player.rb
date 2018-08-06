@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
 class Player
-    attr_reader :name, :scene, :points
+    attr_reader :name, :scene
+    attr_accessor :points
 
     def initialize(config_obj)
         @name = config_obj[:name]
         @scene = config_obj[:scene]
         @points = 0.0
+    end
+
+    def to_s
+        "#{@name} (#{@scene})"
     end
 end
