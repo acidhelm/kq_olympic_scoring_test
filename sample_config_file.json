@@ -1,6 +1,6 @@
 {
     "base_point_value": 0,
-    "final_bracket": true,
+    "next_bracket": null,
     "max_players_to_count": 3,
     "match_values": [ 1, 1, 1, 2, 2, 3, 3 ],
     "teams": [
