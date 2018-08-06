@@ -35,6 +35,13 @@ class Tournament
 
             slug = bracket.config.next_bracket
         end
+
+        # Check that all the config files have the same max_players_to_count.
+        values = @brackets.map { |b| b.config.max_players_to_count }
+
+        if values.count(values[0]) != values.size
+            raise "All brackets must have the same \"max_players_to_count\"."
+        end
     end
 
     def calculate_points
