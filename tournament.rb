@@ -13,6 +13,7 @@ class Tournament
     def load(slug)
         # TODO: Load the next bracket if there is one.
         bracket = Bracket.new(slug)
+        @brackets << bracket
 
         bracket.players.each_value do |team|
             team.each do |player|
@@ -27,5 +28,13 @@ class Tournament
         end
 
         puts scene_list
+    end
+
+    def calculate_points
+        @brackets.each do |bracket|
+            bracket.calculate_team_points
+            # bracket.calculate_player_points
+            # bracket.calculate_scene_points
+        end
     end
 end

@@ -11,4 +11,8 @@ class Match
         @team2_id = challonge_obj[:player2_id]
         @points = match_values[@play_order - 1]
     end
+
+    def has_team?(team_id)
+        team1_id == team_id || team2_id == team_id
+    end
 end

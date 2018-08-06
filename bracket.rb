@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Bracket
-    attr_accessor :teams, :players, :matches, :config
+    attr_accessor :state, :teams, :players, :matches, :config
 
     def initialize(slug)
         @slug = slug
@@ -12,10 +12,42 @@ class Bracket
         response = send_get_request(url, "#{@slug}_tournament.json", params)
         @challonge_bracket = OpenStruct.new(response[:tournament])
 
+        @state = @challonge_bracket.state
+
         read_config
         read_teams
         read_matches
         read_players
+    end
+
+    # Calculates how many points each team has earned in a bracket.  If the
+    # bracket is not yet complete, the values are the mininum number of points
+    # that the team can receive based on their current position in the bracket.
+    def calculate_team_points
+        # If the bracket is complete, we can calculate points based on the
+        # teams' `final_rank`s.
+        if @state == "complete"
+            calculate_team_points_by_final_rank
+            return
+        end
+
+        # For each team, look at the matches that it is in, look at the point
+        # values of those matches, and take the maximum point value.  That's the
+        # number of points that the team has earned so far in the bracket.
+        base_point_value = @config.base_point_value
+
+        @teams.each do |team|
+            matches_with_team = @matches.select { |match| match.has_team?(team.id) }
+
+            puts "Team #{team.name} was in #{matches_with_team.size} matches"
+
+            points_earned = matches_with_team.max_by(&:points).points
+
+            puts "The largest point value of those matches is #{points_earned}" \
+                   "#{" + #{base_point_value} base" if base_point_value > 0}"
+
+            team.points = points_earned + base_point_value
+        end
     end
 
     protected
@@ -87,7 +119,7 @@ class Bracket
         array_size = @config.match_values.size
 
         if num_matches != array_size
-            if @challonge_bracket.state != "complete" ||
+            if @state != "complete" ||
                @challonge_bracket.tournament_type != "double elimination" ||
                array_size != num_matches + 1
                 raise "match_values in the config file is the wrong size." \
@@ -138,6 +170,43 @@ class Bracket
 
         if invalid_teams.any?
             raise "These teams don't have 5 players: #{invalid_teams.join(', ')}"
+        end
+    end
+
+    # Calculates how many points each team earned in the bracket.
+    def calculate_team_points_by_final_rank
+        # Calculate how many points to award to each rank.  When multiple teams
+        # have the same rank (e.g., two teams tie for 5th place), those teams
+        # get the average of the points available to those ranks.  For example,
+        # in a 6-team bracket, the teams in 1st through 4th place get 6 through 3
+        # points respectively.  The two teams in 5th get 1.5, the average of 2 and 1.
+        sorted_teams = @teams.sort_by(&:final_rank)
+        num_teams = sorted_teams.size.to_f
+
+        final_rank_points = sorted_teams.each_with_index.
+                              each_with_object({}) do |(team, idx), rank_points|
+            rank_points[team.final_rank] ||= []
+            rank_points[team.final_rank] << num_teams - idx
+        end
+
+        # For debugging: Print the points to be awarded to each rank.  We can
+        # check the output to ensure that ranks where teams are tied are correctly
+        # assigned multiple point values.
+        final_rank_points.sort.each do |rank, points|
+            puts "Points for rank #{rank} = #{points.join(', ')}"
+        end
+
+        base_point_value = @config.base_point_value
+
+        sorted_teams.each do |team|
+            points_earned = final_rank_points[team.final_rank].sum /
+                              final_rank_points[team.final_rank].size
+
+            puts "#{team.name} finished in position #{team.final_rank} and gets" \
+                   " #{points_earned} points" \
+                   "#{" + #{base_point_value} base" if base_point_value > 0}"
+
+            team.points = points_earned + base_point_value
         end
     end
 

@@ -338,5 +338,7 @@ end
 
 if __FILE__ == $0
     # main
-    Tournament.new.load(SLUG)
+    tournament = Tournament.new
+    tournament.load(SLUG)
+    tournament.calculate_points
 end

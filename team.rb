@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Team
-    attr_reader :players, :id, :name, :final_rank, :points
+    attr_reader :players, :id, :name, :final_rank
+    attr_accessor :points
 
     def initialize(challonge_obj)
         @id = challonge_obj[:id]
