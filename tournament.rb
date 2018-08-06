@@ -11,25 +11,30 @@ class Tournament
     # Reads the Challonge bracket with the given slug, and fills in all the
     # data structures that represent that bracket.
     def load(slug)
-        # TODO: Load the next bracket if there is one.
-        bracket = Bracket.new(slug)
-        @brackets << bracket
+        while slug
+            puts "Reading the bracket \"#{slug}\""
 
-        scenes = {}
+            bracket = Bracket.new(slug)
+            @brackets << bracket
 
-        bracket.players.each_value do |team|
-            team.each do |player|
-                scenes[player.scene] ||= []
-                scenes[player.scene] << player
+            scenes = {}
+
+            bracket.players.each_value do |team|
+                team.each do |player|
+                    scenes[player.scene] ||= []
+                    scenes[player.scene] << player
+                end
             end
-        end
 
-        scene_list = scenes.map do |scene, players|
-            "Scene #{scene} has #{players.size} players: " +
-              players.map(&:name).join(", ")
-        end
+            scene_list = scenes.map do |scene, players|
+                "Scene #{scene} has #{players.size} players: " +
+                  players.map(&:name).join(", ")
+            end
 
-        puts scene_list
+            puts scene_list
+
+            slug = bracket.config.next_bracket
+        end
     end
 
     def calculate_points
