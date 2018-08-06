@@ -44,7 +44,7 @@ teams.  The parameters are:
 ```json
 {
   "base_point_value": 0,
-  "final_bracket": true,
+  "next_bracket": null,
   "max_players_to_count": 3,
   "match_values": [ 1, 1, 1, 2, 2, 3, 3 ],
 }
@@ -55,10 +55,12 @@ teams.  The parameters are:
 to the final bracket.  Set this to the number of teams that did not advance.
 For example, if your tournament has 20 teams, and 12 play in the final bracket,
 set `base_point_value` to 8 (20-12).  
-`final_bracket`: This is not currently used. It may be used in the future if
-the code is able to handle tournaments with multiple brackets.  
+`next_bracket`: Set this to the slug of a bracket that should be processed
+after the current bracket.  Set it to `null` or omit it in the config file of
+the last bracket in the tournament.  
 `max_players_to_count`: The maximum number of players from a scene that can
-contribute to that scene's score.  
+contribute to that scene's score.  All config files in a tournament must have
+the same value for this field.  
 `match_values`: An array of integers.  These are the points that are awarded
 to the players on a team for reaching each match of the bracket.  For example,
 a team that reaches match 4 gets 2 points, since the 4th element in the array
@@ -111,5 +113,6 @@ players, and the scenes that the players represent.
 }
 ```
 
-The team name in the config file must exactly match the team's name in the
-Challonge bracket.
+The team name in the config file must match the team's name in the
+Challonge bracket, although the case of letters may differ.  This means that
+a team must have the same name in all the brackets in a tournament.
