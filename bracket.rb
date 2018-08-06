@@ -96,7 +96,7 @@ class Bracket
 
         config = send_get_request(uri.to_s, "#{@slug}_config_file.json")
 
-        %i(base_point_value final_bracket max_players_to_count match_values).each do |key|
+        %i(base_point_value max_players_to_count match_values).each do |key|
             raise "The config file is missing \"#{key}\"" unless config.key?(key)
         end
 
