@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 class Tournament
-    attr_reader :brackets, :scenes, :scene_scores
+    attr_reader :brackets, :scene_scores
 
     def initialize
         @brackets = []
-        @scenes = {}
         @scene_scores = []
     end
 
@@ -16,14 +15,16 @@ class Tournament
         bracket = Bracket.new(slug)
         @brackets << bracket
 
+        scenes = {}
+
         bracket.players.each_value do |team|
             team.each do |player|
-                @scenes[player.scene] ||= []
-                @scenes[player.scene] << player
+                scenes[player.scene] ||= []
+                scenes[player.scene] << player
             end
         end
 
-        scene_list = @scenes.map do |scene, players|
+        scene_list = scenes.map do |scene, players|
             "Scene #{scene} has #{players.size} players: " +
               players.map(&:name).join(", ")
         end
