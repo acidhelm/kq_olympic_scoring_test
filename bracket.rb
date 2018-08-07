@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Bracket
-    attr_accessor :state, :teams, :players, :matches, :config
+    attr_reader :players, :config
 
     def initialize(slug)
         @slug = slug

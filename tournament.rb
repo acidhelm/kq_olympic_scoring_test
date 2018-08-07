@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Tournament
-    attr_reader :brackets, :scene_scores
+    attr_reader :scene_scores
 
     def initialize
         @brackets = []
