@@ -112,7 +112,22 @@ class Bracket
 
         puts "#{@teams.size} teams are in the bracket: " +
                @teams.sort_by(&:name).map { |t| %("#{t.name}") }.join(", ")
-    end
+
+        # Check that all of the teams in the bracket are also in the config file.
+        missing_teams = []
+        config_team_names = @config.teams.map { |t| t[:name] }
+
+        @teams.each do |team|
+            if !config_team_names.any? { |name| name.casecmp?(team.name) }
+                missing_teams << team.name
+            end
+        end
+
+        if missing_teams.any?
+            raise "These teams are in the bracket but not the config file: " +
+                  missing_teams.join(", ")
+        end
+end
 
     def read_matches
         # Check that `match_values` in the config file is the right size.
