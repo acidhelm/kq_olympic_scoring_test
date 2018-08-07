@@ -118,7 +118,7 @@ class Bracket
         config_team_names = @config.teams.map { |t| t[:name] }
 
         @teams.each do |team|
-            if !config_team_names.any? { |name| name.casecmp?(team.name) }
+            if config_team_names.none? { |name| name.casecmp?(team.name) }
                 missing_teams << team.name
             end
         end
@@ -127,7 +127,7 @@ class Bracket
             raise "These teams are in the bracket but not the config file: " +
                   missing_teams.join(", ")
         end
-end
+    end
 
     def read_matches
         # Check that `match_values` in the config file is the right size.
