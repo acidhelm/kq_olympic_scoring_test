@@ -58,9 +58,9 @@ set `base_point_value` to 8 (20-12).
 `next_bracket`: Set this to the slug or the Challonge ID of a bracket that
 should be processed after the current bracket.  Set it to `null` or omit it in
 the config file of the last bracket in the tournament.  If you set this to the
-slug of a tournament is owned by an organization, the string must be of the form
+slug of a tournament that is owned by an organization, the string must be of the form
 "org_name-bracket_name", for example, "kq-sf-GDC3" (which is owned by the "kq-sf"
-organization).
+organization).  
 `max_players_to_count`: The maximum number of players from a scene that can
 contribute to that scene's score.  All config files in a tournament must have
 the same value for this field.  
