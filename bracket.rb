@@ -42,8 +42,8 @@ class Bracket
             match[:match][:attachment_count] == 1
         end
 
-        raise "No attachments were found in the bracket" if first_match.empty?
-        raise "Multiple matches have an attachment" if first_match.size > 1
+        raise "No matches with one attachment were found in the bracket" if first_match.empty?
+        raise "Multiple matches have one attachment" if first_match.size > 1
 
         # Read the options from the config file that's attached to that match.
         url = "https://api.challonge.com/v1/tournaments/#{@slug}/matches/" \
