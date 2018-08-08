@@ -20,6 +20,18 @@ class Bracket
         read_players
     end
 
+    # Calculates how many points each player has earned in a bracket.  If the
+    # bracket is not yet complete, the point values are the mininum number of
+    # points that the player can receive based on their current position in
+    # the bracket.
+    # On exit, `@player` contains a hash.  The keys are the Challonge IDs of
+    # the teams in the bracket.  The values are arrays of `Player` objects
+    # representing the players on the team.
+    def calculate_points
+        calculate_team_points
+        calculate_player_points
+    end
+
     # Calculates how many points each team has earned in a bracket.  If the
     # bracket is not yet complete, the values are the mininum number of points
     # that the team can receive based on their current position in the bracket.
