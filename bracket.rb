@@ -24,56 +24,12 @@ class Bracket
     # bracket is not yet complete, the point values are the mininum number of
     # points that the player can receive based on their current position in
     # the bracket.
-    # On exit, `@player` contains a hash.  The keys are the Challonge IDs of
+    # On exit, `@players` contains a hash.  The keys are the Challonge IDs of
     # the teams in the bracket.  The values are arrays of `Player` objects
     # representing the players on the team.
     def calculate_points
         calculate_team_points
         calculate_player_points
-    end
-
-    # Calculates how many points each team has earned in a bracket.  If the
-    # bracket is not yet complete, the values are the mininum number of points
-    # that the team can receive based on their current position in the bracket.
-    def calculate_team_points
-        # If the bracket is complete, we can calculate points based on the
-        # teams' `final_rank`s.
-        if @state == "complete"
-            calculate_team_points_by_final_rank
-            return
-        end
-
-        # For each team, look at the matches that it is in, look at the point
-        # values of those matches, and take the maximum point value.  That's the
-        # number of points that the team has earned so far in the bracket.
-        base_point_value = @config.base_point_value
-
-        @teams.each do |team|
-            matches_with_team = @matches.select { |match| match.has_team?(team.id) }
-
-            puts "Team #{team.name} was in #{matches_with_team.size} matches"
-
-            points_earned = matches_with_team.max_by(&:points).points
-
-            puts "The largest point value of those matches is #{points_earned}" \
-                   "#{" + #{base_point_value} base" if base_point_value > 0}"
-
-            team.points = points_earned + base_point_value
-        end
-    end
-
-    # Calculates how many points each player has earned in the tournament.
-    def calculate_player_points
-        # Sort the teams by points in descending order.  This way, the output will
-        # follow the teams' finishing order, which will be easier to read.
-        @teams.sort_by(&:points).reverse_each do |team|
-            puts "Awarding #{team.points} points to #{team.name}: " +
-                 @players[team.id].map(&:to_s).join(", ")
-
-            @players[team.id].each do |player|
-                player.points = team.points
-            end
-        end
     end
 
     protected
@@ -211,6 +167,50 @@ class Bracket
 
         if invalid_teams.any?
             raise "These teams don't have 5 players: #{invalid_teams.join(', ')}"
+        end
+    end
+
+    # Calculates how many points each team has earned in a bracket.  If the
+    # bracket is not yet complete, the values are the mininum number of points
+    # that the team can receive based on their current position in the bracket.
+    def calculate_team_points
+        # If the bracket is complete, we can calculate points based on the
+        # teams' `final_rank`s.
+        if @state == "complete"
+            calculate_team_points_by_final_rank
+            return
+        end
+
+        # For each team, look at the matches that it is in, look at the point
+        # values of those matches, and take the maximum point value.  That's the
+        # number of points that the team has earned so far in the bracket.
+        base_point_value = @config.base_point_value
+
+        @teams.each do |team|
+            matches_with_team = @matches.select { |match| match.has_team?(team.id) }
+
+            puts "Team #{team.name} was in #{matches_with_team.size} matches"
+
+            points_earned = matches_with_team.max_by(&:points).points
+
+            puts "The largest point value of those matches is #{points_earned}" \
+                   "#{" + #{base_point_value} base" if base_point_value > 0}"
+
+            team.points = points_earned + base_point_value
+        end
+    end
+
+    # Calculates how many points each player has earned in the tournament.
+    def calculate_player_points
+        # Sort the teams by points in descending order.  This way, the output will
+        # follow the teams' finishing order, which will be easier to read.
+        @teams.sort_by(&:points).reverse_each do |team|
+            puts "Awarding #{team.points} points to #{team.name}: " +
+                 @players[team.id].map(&:to_s).join(", ")
+
+            @players[team.id].each do |player|
+                player.points = team.points
+            end
         end
     end
 
