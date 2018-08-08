@@ -19,10 +19,13 @@ SLUG = ENV["CHALLONGE_SLUG"]
 
 def main
     tournament = Tournament.new
-    tournament.load(SLUG)
-    tournament.calculate_points
 
-    puts tournament.scene_scores.sort
+    if tournament.load(SLUG)
+        tournament.calculate_points
+        puts tournament.scene_scores.sort
+    else
+        puts "No brackets were loaded."
+    end
 end
 
 if __FILE__ == $0

@@ -5,7 +5,11 @@ class Bracket
 
     def initialize(slug)
         @slug = slug
+        @loaded = false
+    end
 
+    # Returns a boolean indicating whether the bracket was loaded.
+    def load
         url = "https://api.challonge.com/v1/tournaments/#{@slug}.json"
         params = { include_matches: 1, include_participants: 1 }
 
@@ -14,10 +18,21 @@ class Bracket
 
         @state = @challonge_bracket.state
 
+        # Bail out if the bracket hasn't started yet.  This lets the tournament
+        # organizer set the `next_bracket` value to a bracket that has been
+        # created on Challonge, but which will be started in the future.  For
+        # example, the organizer can create a wild card bracket and a finals
+        # bracket, and set `next_bracket` in the wild card bracket to the slug
+        # of the finals bracket before the wild card bracket has finished.
+        return false if @challonge_bracket.started_at.nil?
+
         read_config
         read_teams
         read_matches
         read_players
+
+        @loaded = true
+        true
     end
 
     # Calculates how many points each player has earned in a bracket.  If the
@@ -28,6 +43,8 @@ class Bracket
     # the teams in the bracket.  The values are arrays of `Player` objects
     # representing the players on the team.
     def calculate_points
+        raise "The bracket was not loaded" if !@loaded
+
         calculate_team_points
         calculate_player_points
     end

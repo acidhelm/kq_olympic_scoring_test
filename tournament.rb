@@ -9,12 +9,15 @@ class Tournament
     end
 
     # Reads the Challonge bracket with the given slug, and fills in all the
-    # data structures that represent that bracket.
+    # data structures that represent that bracket.  Returns true if at least
+    # one bracket was loaded, and false otherwise.
     def load(slug)
         while slug
             puts "Reading the bracket \"#{slug}\""
 
             bracket = Bracket.new(slug)
+            break if !bracket.load
+
             @brackets << bracket
 
             scenes = {}
@@ -36,12 +39,16 @@ class Tournament
             slug = bracket.config.next_bracket
         end
 
+        return false if @brackets.empty?
+
         # Check that all the config files have the same max_players_to_count.
         values = @brackets.map { |b| b.config.max_players_to_count }
 
         if values.count(values[0]) != values.size
             raise "All brackets must have the same \"max_players_to_count\"."
         end
+
+        true
     end
 
     def calculate_points
