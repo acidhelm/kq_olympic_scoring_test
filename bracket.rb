@@ -248,13 +248,6 @@ class Bracket
             rank_points[team.final_rank] << num_teams - idx
         end
 
-        # For debugging: Print the points to be awarded to each rank.  We can
-        # check the output to ensure that ranks where teams are tied are correctly
-        # assigned multiple point values.
-        final_rank_points.sort.each do |rank, points|
-            puts "Points for rank #{rank} = #{points.join(', ')}"
-        end
-
         base_point_value = @config.base_point_value
 
         sorted_teams.each do |team|

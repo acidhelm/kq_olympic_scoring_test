@@ -34,7 +34,7 @@ class Tournament
             end
 
             scene_list = scenes.map do |scene, players|
-                "Scene #{scene} has #{players.size} players: " +
+                "#{scene} has #{players.size} players: " +
                   players.map(&:name).join(", ")
             end
 
