@@ -144,8 +144,6 @@ class Bracket
         elim_stage_matches.each do |match|
             @matches << Match.new(match[:match], @config.match_values)
         end
-
-        @matches.sort_by!(&:play_order)
     end
 
     def read_players
