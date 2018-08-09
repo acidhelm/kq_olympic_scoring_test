@@ -4,13 +4,13 @@ require "dotenv/load"
 require "json"
 require "optparse"
 require "rest-client"
-require_relative "tournament"
-require_relative "scene"
 require_relative "bracket"
-require_relative "team"
+require_relative "config"
 require_relative "match"
 require_relative "player"
-require_relative "config"
+require_relative "scene"
+require_relative "team"
+require_relative "tournament"
 
 Options = Struct.new(:tournament_name, :api_key, :use_cache, :update_cache) do
     def initialize
