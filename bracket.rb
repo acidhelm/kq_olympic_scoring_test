@@ -3,8 +3,11 @@
 class Bracket
     attr_reader :players, :config
 
-    def initialize(slug)
+    def initialize(slug, options)
         @slug = slug
+        @api_key = options.api_key
+        @use_cache = options.use_cache
+        @update_cache = options.update_cache
         @loaded = false
     end
 
@@ -272,14 +275,14 @@ class Bracket
     # read instead.
     def send_get_request(url, cache_file, params = {})
         cached_response_file = "cache_#{cache_file}"
-        params[:api_key] = API_KEY
+        params[:api_key] = @api_key
 
-        if USE_CACHE && File.exist?(cached_response_file)
+        if @use_cache && File.exist?(cached_response_file)
             puts "Using the cached response from #{cached_response_file}"
             JSON.parse(IO.read(cached_response_file), symbolize_names: true)
         else
             resp = RestClient.get(url, params: params)
-            IO.write(cached_response_file, resp) if UPDATE_CACHE
+            IO.write(cached_response_file, resp) if @update_cache
 
             JSON.parse(resp, symbolize_names: true)
         end

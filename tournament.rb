@@ -3,19 +3,23 @@
 class Tournament
     attr_reader :scene_scores
 
-    def initialize
+    def initialize(options)
         @brackets = []
         @scene_scores = []
+        @options = options
     end
 
-    # Reads the Challonge bracket with the given slug, and fills in all the
-    # data structures that represent that bracket.  Returns true if at least
-    # one bracket was loaded, and false otherwise.
-    def load(slug)
+    # Reads the Challonge bracket with the slug that was passed in the options
+    # struct to the constructor, and fills in all the data structures that
+    # represent that bracket.  Returns true if at least one bracket was loaded,
+    # and false otherwise.
+    def load
+        slug = @options.tournament_name
+
         while slug
             puts "Reading the bracket \"#{slug}\""
 
-            bracket = Bracket.new(slug)
+            bracket = Bracket.new(slug, @options)
             break if !bracket.load
 
             @brackets << bracket

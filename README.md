@@ -12,24 +12,18 @@ $ cd kq_olympic_scoring_test
 $ bundle install --path vendor/bundle
 ```
 
-Then, create a file named `.env` in the source directory with this content:
+Run the script with:
 
 ```
-CHALLONGE_API_KEY=your_challonge_api_key
-CHALLONGE_SLUG="tvtpeasf"
+bundle exec ruby test.rb -t tvtpeasf -a your_challonge_api_key
 ```
 
 You can find your Challonge API key in
 [your account settings](https://challonge.com/settings/developer).
-"tvtpeasf" is a simple 4-team bracket that demonstrates the calculations that
-the script does.  Run the script with:
-
-```
-bundle exec ruby test.rb
-```
 
 The script prints a lot of debug output, but at the end, it prints how many
-points each scene earned.
+points each scene earned.  "tvtpeasf" is a simple 4-team bracket that demonstrates
+the calculations that the script does.
 
 # The config file
 
