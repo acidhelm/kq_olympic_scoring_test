@@ -16,7 +16,15 @@ class Bracket
         url = "https://api.challonge.com/v1/tournaments/#{@slug}.json"
         params = { include_matches: 1, include_participants: 1 }
 
-        response = send_get_request(url, "#{@slug}_tournament.json", params)
+        begin
+            response = send_get_request(url, "#{@slug}_tournament.json", params)
+        rescue RestClient::NotFound
+            # Bail out if we got a 404 error.  The bracket doesn't exist on
+            # Challonge right now, but it might be created in the future.
+            puts "Warning: The bracket does not exist."
+            return false
+        end
+
         @challonge_bracket = OpenStruct.new(response[:tournament])
 
         @state = @challonge_bracket.state
@@ -27,7 +35,10 @@ class Bracket
         # example, the organizer can create a wild card bracket and a finals
         # bracket, and set `next_bracket` in the wild card bracket to the slug
         # of the finals bracket before the wild card bracket has finished.
-        return false if @challonge_bracket.started_at.nil?
+        if @challonge_bracket.started_at.nil?
+            puts "The bracket has not been started yet."
+            return false
+        end
 
         read_config
         read_teams
