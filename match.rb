@@ -12,6 +12,6 @@ class Match
     end
 
     def has_team?(team_id)
-        team1_id == team_id || team2_id == team_id
+        @team1_id == team_id || @team2_id == team_id
     end
 end
