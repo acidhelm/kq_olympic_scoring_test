@@ -131,7 +131,8 @@ class Bracket
     def read_matches
         # Check that `match_values` in the config file is the right size.
         # The size must normally equal the number of matches.  However, if the
-        # bracket is complete and it is double-elimination, then the array size is
+        # bracket is complete (finalized, or not finalized but all matches have
+        # been played) and it is double-elimination, then the array size is
         # allowed to be one more than the number of matches, to account for a grand
         # final that was only one match long.
         #
@@ -147,7 +148,7 @@ class Bracket
         array_size = @config.match_values.size
 
         if num_matches != array_size
-            if @state != "complete" ||
+            if (@state != "complete" && @state != "awaiting_review") ||
                @challonge_bracket.tournament_type != "double elimination" ||
                array_size != num_matches + 1
                 raise "match_values in the config file is the wrong size." \
