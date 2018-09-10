@@ -23,7 +23,8 @@ You can find your Challonge API key in
 
 The script prints a lot of debug output, but at the end, it prints how many
 points each scene earned.  "tvtpeasf" is a simple 4-team bracket that demonstrates
-the calculations that the script does.
+the calculations that the script does.  You can also pass `-t clonekqxxvwc` to
+use a copy of the KQ 25 brackets that have been set up to work with the script.
 
 # The config file
 
