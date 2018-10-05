@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class Tournament
-    attr_reader :scene_scores
+    attr_reader :scene_scores, :complete
 
     def initialize(options)
         @brackets = []
         @scene_scores = []
+        @complete = false
         @options = options
     end
 
@@ -15,12 +16,17 @@ class Tournament
     # and false otherwise.
     def load
         slug = @options.tournament_name
+        all_brackets_loaded = true
 
         while slug
             puts "Reading the bracket \"#{slug}\""
 
             bracket = Bracket.new(slug, @options)
-            break if !bracket.load
+
+            if !bracket.load
+                all_brackets_loaded = false
+                break
+            end
 
             @brackets << bracket
 
@@ -51,6 +57,10 @@ class Tournament
         if values.count(values[0]) != values.size
             raise "All brackets must have the same \"max_players_to_count\"."
         end
+
+        # If we loaded all the brackets in the list of brackets, set our
+        # `complete` member based on the states of those brackets.
+        @complete = @brackets.all?(&:complete?) if all_brackets_loaded
 
         true
     end
