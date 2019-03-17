@@ -1,3 +1,9 @@
+# This repo is no longer being maintained
+
+The code has been moved to
+[the killer_queen_scene_scoring gem](https://github.com/acidhelm/killer_queen_scene_scoring)
+to make it reusable.
+
 # Bumble Bash 3 scoring
 
 This is an initial test implementation of the scene-wide scoring system that will
